@@ -1,7 +1,18 @@
-fun main(args: Array<String>) {
-  println("Hello World!")
+import com.github.horitaku1124.ts_compiler.LexicalAnalyzer
+import com.github.horitaku1124.ts_compiler.TreeBuilder
+import com.github.horitaku1124.ts_compiler.nodes.FileNode
+import com.github.horitaku1124.ts_compiler.writers.GoWriter
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.io.path.nameWithoutExtension
 
-  // Try adding program arguments via Run/Debug configuration.
-  // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-  println("Program arguments: ${args.joinToString()}")
+fun main(args: Array<String>) {
+  val path = Path.of(args[0])
+  val codeText = Files.readString(path)
+  val tokens = LexicalAnalyzer().parse(codeText)
+  println(tokens)
+  val ast = TreeBuilder().buildAst(tokens)
+  val fileAst = FileNode(path.fileName.nameWithoutExtension, ast)
+  GoWriter().write(fileAst, Path.of("out/" + path.fileName.nameWithoutExtension + ".go"))
+  println(fileAst)
 }
