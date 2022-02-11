@@ -32,4 +32,28 @@ class LexicalAnalyzerTests {
     assertEquals("2", tokens[4])
     assertEquals(")", tokens[5])
   }
+  @Test
+  fun parseTest3() {
+    val tokens = analyzer.parse("a=1+1;")
+    assertEquals(6, tokens.size)
+    assertEquals("a", tokens[0])
+    assertEquals("=", tokens[1])
+    assertEquals("1", tokens[2])
+    assertEquals("+", tokens[3])
+    assertEquals("1", tokens[4])
+    assertEquals(";", tokens[5])
+  }
+  @Test
+  fun parseTest4() {
+    val tokens = analyzer.parse("var abc=100*123;")
+    assertEquals(8, tokens.size)
+    assertEquals("var", tokens[0])
+    assertEquals(" ", tokens[1])
+    assertEquals("abc", tokens[2])
+    assertEquals("=", tokens[3])
+    assertEquals("100", tokens[4])
+    assertEquals("*", tokens[5])
+    assertEquals("123", tokens[6])
+    assertEquals(";", tokens[7])
+  }
 }
