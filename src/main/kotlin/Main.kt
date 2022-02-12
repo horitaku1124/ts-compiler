@@ -1,4 +1,5 @@
 import com.github.horitaku1124.ts_compiler.LexicalAnalyzer
+import com.github.horitaku1124.ts_compiler.MergedLiner
 import com.github.horitaku1124.ts_compiler.TreeBuilder
 import com.github.horitaku1124.ts_compiler.nodes.FileNode
 import com.github.horitaku1124.ts_compiler.writers.GoWriter
@@ -11,7 +12,8 @@ fun main(args: Array<String>) {
   val codeText = Files.readString(path)
   val tokens = LexicalAnalyzer().parse(codeText)
   println(tokens)
-  val ast = TreeBuilder().buildAst(tokens)
+  val lines = MergedLiner().mergeLine(tokens)
+  val ast = TreeBuilder().buildAst(lines)
   val fileAst = FileNode(path.fileName.nameWithoutExtension, ast)
   GoWriter().write(fileAst, Path.of("out/" + path.fileName.nameWithoutExtension + ".go"))
   println(fileAst)

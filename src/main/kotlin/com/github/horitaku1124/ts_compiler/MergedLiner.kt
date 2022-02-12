@@ -8,9 +8,11 @@ class MergedLiner {
     var tokensOfLine = arrayListOf<String>()
     for(token in tokens) {
       if (token == ";" || token == "\n") {
-        list.add(LogicalLine(lineNum, tokensOfLine))
-        tokensOfLine = arrayListOf()
-        lineNum++
+        if (tokensOfLine.isNotEmpty()) {
+          list.add(LogicalLine(lineNum, tokensOfLine))
+          tokensOfLine = arrayListOf()
+          lineNum++
+        }
       } else {
         if (token != " " && token != "\t") {
           tokensOfLine.add(token)
