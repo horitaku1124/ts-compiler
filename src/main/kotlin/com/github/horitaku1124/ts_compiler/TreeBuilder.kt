@@ -41,14 +41,22 @@ class TreeBuilder {
         expression.add(StringNode(token.substring(1, token.length - 1)))
       } else if (token == "var" || token == "let" || token == "const") {
         val nextToken = tokens[index++]
-        val variable = VariableDefineNode(nextToken)
 
-        if (tokens[index] == "=") {
-          variable.withValue = ValueNode(tokens[index + 1])
-          index += 2
+        val endOfLine = index >= tokens.size
+        var variable: VariableDefineNode
+        if (endOfLine) {
+          variable = VariableDefineNode(nextToken)
+        } else {
+          if (tokens[index] == "=") {
+            variable = VariableDefineNode(nextToken, null, true)
+            variable.withValue = ValueNode(tokens[index + 1])
+            index += 2
+          } else {
+            TODO()
+          }
         }
-
         expression.add(variable)
+
       } else {
         temp.add(token)
       }
