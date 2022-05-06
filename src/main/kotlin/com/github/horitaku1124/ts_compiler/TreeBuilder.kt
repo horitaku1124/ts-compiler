@@ -1,6 +1,7 @@
 package com.github.horitaku1124.ts_compiler
 
 import com.github.horitaku1124.ts_compiler.nodes.*
+import com.github.horitaku1124.ts_compiler.nodes.exceptions.CompileFailure
 import com.github.horitaku1124.ts_compiler.nodes.values.StringNode
 import com.github.horitaku1124.ts_compiler.nodes.values.ValueNode
 
@@ -40,19 +41,45 @@ class TreeBuilder {
       } else if (token.startsWith("\"")) {
         expression.add(StringNode(token.substring(1, token.length - 1)))
       } else if (token == "var" || token == "let" || token == "const") {
-        val nextToken = tokens[index++]
+        val localVar = tokens[index++]
 
-        val endOfLine = index >= tokens.size
-        var variable: VariableDefineNode
-        if (endOfLine) {
-          variable = VariableDefineNode(nextToken)
+        val remainCount = tokens.size - index
+        var variable: NodeBase
+        if (remainCount <= 0) {
+          variable = VariableDefineNode(localVar)
         } else {
-          if (tokens[index] == "=") {
-            variable = VariableDefineNode(nextToken, null, true)
-            variable.withValue = ValueNode(tokens[index + 1])
-            index += 2
+          val defineWay = tokens[index++]
+          if (remainCount == 2) {
+            if (defineWay == "=") {
+              variable = VariableDefineNode(localVar, null, true)
+              variable.withValue = ValueNode(tokens[index])
+              index += 2
+            } else {
+              throw CompileFailure()
+            }
+          } else if (remainCount >= 3) {
+            if (defineWay == "=") {
+              val left = tokens[index++]
+              val nextToken2 = tokens[index++]
+              val right = tokens[index++]
+              if (nextToken2 == "+" || nextToken2 == "-" || nextToken2 == "*" || nextToken2 == "/") {
+                variable = ExpressionDefineNode(
+                  localVar,
+                  defineWay,
+                  OperationNode(
+                    nextToken2,
+                    ValueNode(left),
+                    ValueNode(right),
+                  )
+                )
+              } else {
+                TODO()
+              }
+            } else {
+              throw CompileFailure()
+            }
           } else {
-            TODO()
+            throw CompileFailure()
           }
         }
         expression.add(variable)

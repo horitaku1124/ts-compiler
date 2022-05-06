@@ -1,8 +1,10 @@
 package com.github.horitaku1124.ts_compiler
 
+import com.github.horitaku1124.ts_compiler.nodes.ExpressionDefineNode
 import com.github.horitaku1124.ts_compiler.nodes.FunctionCallNode
 import com.github.horitaku1124.ts_compiler.nodes.values.StringNode
 import com.github.horitaku1124.ts_compiler.nodes.VariableDefineNode
+import com.github.horitaku1124.ts_compiler.nodes.values.ValueNode
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -87,10 +89,14 @@ class TreeBuilderTests {
     ast[0].let { line1 ->
       assertEquals(1, line1.size)
       line1[0].let { node ->
-        assertTrue(node is VariableDefineNode)
+        assertTrue(node is ExpressionDefineNode)
         assertEquals("c", node.name)
-        assertEquals(true, node.hasAssignment)
-        assertEquals("10", node.withValue?.value)
+        assertEquals("=", node.type)
+        assertEquals("+", node.operationNode.type)
+        assertEquals(true, node.operationNode.leftNode is ValueNode)
+        assertEquals(true, node.operationNode.rightNode is ValueNode)
+        assertEquals("10", (node.operationNode.leftNode as ValueNode).value)
+        assertEquals("20", (node.operationNode.rightNode as ValueNode).value)
       }
     }
   }
