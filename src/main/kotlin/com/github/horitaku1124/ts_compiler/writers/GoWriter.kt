@@ -1,10 +1,8 @@
 package com.github.horitaku1124.ts_compiler.writers
 
-import com.github.horitaku1124.ts_compiler.nodes.FileNode
-import com.github.horitaku1124.ts_compiler.nodes.FunctionCallNode
-import com.github.horitaku1124.ts_compiler.nodes.VariableCallNode
+import com.github.horitaku1124.ts_compiler.nodes.*
 import com.github.horitaku1124.ts_compiler.nodes.values.StringNode
-import com.github.horitaku1124.ts_compiler.nodes.VariableDefineNode
+import com.github.horitaku1124.ts_compiler.nodes.values.ValueNode
 import java.nio.file.Path
 import kotlin.io.path.writer
 
@@ -33,6 +31,20 @@ class GoWriter {
             }
             goExpression.append(goParams.joinToString(","))
             goExpression.append(")\n")
+          }
+        }
+        if (expression is ExpressionDefineNode) {
+          goExpression
+            .append(indent)
+          if (expression.type == "=") {
+            goExpression
+              .append(expression.name)
+              .append(" := ")
+
+            doOpe(expression.operationNode, goExpression)
+
+            goExpression
+              .append("\n")
           }
         }
         if (expression is VariableDefineNode) {
@@ -68,6 +80,23 @@ class GoWriter {
       writer.write("func main() {\n")
       writer.write(goExpression.toString())
       writer.write("}\n")
+    }
+  }
+  private fun doOpe(op: NodeBase, goExpression: StringBuffer) {
+    if (op is OperationNode) {
+      if (op.leftNode is ValueNode) {
+        goExpression.append(op.leftNode.value).append(" ")
+      } else {
+        doOpe(op.leftNode, goExpression)
+      }
+      goExpression.append(op.type).append(" ")
+      if (op.rightNode is ValueNode) {
+        goExpression.append(op.rightNode.value).append(" ")
+      } else {
+        doOpe(op.rightNode, goExpression)
+      }
+    } else {
+      TODO()
     }
   }
 }
