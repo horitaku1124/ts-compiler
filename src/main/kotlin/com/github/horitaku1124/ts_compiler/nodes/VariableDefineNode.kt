@@ -10,6 +10,6 @@ data class VariableDefineNode(
   ): NodeBase() {
 
   override fun toString(): String {
-    return "val  $name:$type=$withValue"
+    return "val $name:$type=$withValue"
   }
 }
